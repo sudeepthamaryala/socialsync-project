@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SocialSync — Profile</title>
+
+  <!-- Same styling as feed -->
+  <link rel="stylesheet" href="test_feed.css" />
+
+  <style>
+    /* PROFILE PAGE CUSTOM TWEAKS ONLY */
+    .profile-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      margin-bottom: 28px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 42px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .edit-profile-btn {
+      margin-top: 10px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .25s, transform .2s;
+      font-size: 14px;
+    }
+
+    .edit-profile-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateY(-2px);
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .pstat {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 12px 16px;
+      border-radius: 14px;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .pstat .num {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .tab {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab.active {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: #000;
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .grid-post {
+      height: 160px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .grid-post img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ==========================================================
+       WELCOME POPUP — First-time user experience
+       ========================================================== */
+    .welcome-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .welcome-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .welcome-popup {
+      background: linear-gradient(135deg, rgba(20, 20, 25, 0.95), rgba(30, 30, 40, 0.90));
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 48px 40px;
+      max-width: 520px;
+      width: 90%;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-overlay.active .welcome-popup {
+      transform: scale(1) translateY(0);
+    }
+
+    /* Animated gradient background accent */
+    .welcome-popup::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center,
+          rgba(45, 212, 191, 0.1),
+          rgba(59, 130, 246, 0.08),
+          transparent 70%);
+      animation: welcomeGlow 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes welcomeGlow {
+
+      0%,
+      100% {
+        transform: rotate(0deg) scale(1);
+      }
+
+      50% {
+        transform: rotate(180deg) scale(1.1);
+      }
+    }
+
+    .welcome-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .welcome-emoji {
+      font-size: 64px;
+      margin-bottom: 20px;
+      display: inline-block;
+      animation: welcomeBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes welcomeBounce {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .welcome-title {
+      font-size: 48px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary), var(--accent), #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+      animation: welcomeSlideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) 0.2s both;
+    }
+
+    @keyframes welcomeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .welcome-message {
+      color: #e3edf5;
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: welcomeFadeIn 0.6s ease-out 0.4s both;
+    }
+
+    .welcome-message p {
+      margin-bottom: 14px;
+    }
+
+    .welcome-message strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    @keyframes welcomeFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .welcome-action-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #000;
+      font-weight: 800;
+      font-size: 17px;
+      padding: 16px 36px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: 0 12px 35px rgba(45, 212, 191, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: welcomeFadeIn 0.6s ease-out 0.6s both;
+    }
+
+    .welcome-action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .welcome-action-btn:hover::before {
+      left: 100%;
+    }
+
+    .welcome-action-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 20px 50px rgba(45, 212, 191, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    }
+
+    .welcome-action-btn:active {
+      transform: translateY(-1px) scale(1);
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 600px) {
+      .welcome-popup {
+        padding: 36px 28px;
+      }
+
+      .welcome-title {
+        font-size: 36px;
+      }
+
+      .welcome-emoji {
+        font-size: 48px;
+      }
+
+      .welcome-message {
+        font-size: 15px;
+      }
+
+      .welcome-action-btn {
+        font-size: 16px;
+        padding: 14px 28px;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR (controlled by test_feed.js) -->
+    <aside id="sidebar" class="sidebar collapsed" aria-label="Primary">
+
+      <div class="brand">
+        <img src="logo.png" alt="Social Sync" class="logo" />
+      </div>
+
+      <nav class="nav">
+
+        <button class="nav-btn">
+          <img src="home.png" class="icon" />
+          <span class="label">Home</span>
+        </button>
+
+        <button class="nav-btn active">
+          <img src="profile.png" class="icon" />
+          <span class="label">Profile</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="dashboard.png" class="icon" />
+          <span class="label">Dashboard</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="createpost.png" class="icon" />
+          <span class="label">Create Post</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="messages.png" class="icon" />
+          <span class="label">Messages</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="favourite.png" class="icon" />
+          <span class="label">Favourites</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="notifications.png" class="icon" />
+          <span class="label">Notifications</span>
+        </button>
+
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="main-inner">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+          <div class="username">@username • vibing</div>
+          <button class="logout-top" id="logoutTop">Log Out</button>
+        </header>
+
+        <!-- PROFILE CARD -->
+        <section class="profile-card">
+
+          <div class="profile-header">
+            <div class="profile-avatar">AR</div>
+
+            <div>
+              <div style="font-size:26px;font-weight:800;">Alex Rivera</div>
+              <div style="color:var(--text-muted);">San Francisco • Joined Jan 2024</div>
+
+              <!-- EDIT PROFILE BUTTON -->
+              <button class="edit-profile-btn" onclick="location.href='edit-profile.html'">
+                Edit Profile
+              </button>
+            </div>
+          </div>
+
+          <p style="margin-top:14px;color:#e3edf5;">
+            Designer, traveler, and coffee lover.
+            I build delightful interfaces and write about product design.
+          </p>
+
+          <div class="profile-stats">
+            <div class="pstat">
+              <div class="num">1.2k</div>Followers
+            </div>
+            <div class="pstat">
+              <div class="num">420</div>Following
+            </div>
+            <div class="pstat">
+              <div class="num">184</div>Posts
+            </div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab active" data-tab="posts">Posts</button>
+            <button class="tab" data-tab="about">About</button>
+            <button class="tab" data-tab="media">Media</button>
+          </div>
+
+        </section>
+
+
+        <!-- POSTS TAB -->
+        <div id="postsTab">
+          <div class="posts-grid">
+            <div class="grid-post"><img src="sample1.png"></div>
+            <div class="grid-post"><img src="sample1.png"></div>
+            <div class="grid-post"><img src="sample1.png"></div>
+          </div>
+        </div>
+
+        <!-- ABOUT TAB -->
+        <div id="aboutTab" hidden>
+          <div class="profile-card">
+            <h3>About Alex</h3>
+            <p>Product designer with experience designing apps, SaaS dashboards, and mobile UX flows.</p>
+          </div>
+        </div>
+
+        <!-- MEDIA TAB -->
+        <div id="mediaTab" hidden>
+          <div class="posts-grid">
+            <div class="grid-post"><img src="sample1.png"></div>
+            <div class="grid-post"><img src="sample1.png"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- WELCOME POPUP (First-time users only) -->
+  <div id="welcomePopup" class="welcome-overlay">
+    <div class="welcome-popup">
+      <div class="welcome-content">
+        <div class="welcome-emoji">😎</div>
+        <h1 class="welcome-title">Welcome</h1>
+        <div class="welcome-message">
+          <p>Not gonna lie… you look good here 😎<br>
+            <strong>Welcome to Social Sync</strong>, where the vibes never expire.
+          </p>
+          <p>First login energy 💫<br>
+            You're officially synced. Let's build your profile as iconic as you are.</p>
+        </div>
+        <button id="welcomeActionBtn" class="welcome-action-btn">
+          Step in &amp; shine 🌟
+        </button>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <!-- Shared JS -->
+  <script src="test_feed.js"></script>
+
+  <!-- Profile-specific JS for welcome popup -->
+  <script src="profile.js"></script>      <!--helps in welcome pop-up-->
+
+  <!-- Tabs logic -->
+  <script>
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+        btn.classList.add("active");
+
+        document.getElementById("postsTab").hidden = btn.dataset.tab !== "posts";
+        document.getElementById("aboutTab").hidden = btn.dataset.tab !== "about";
+        document.getElementById("mediaTab").hidden = btn.dataset.tab !== "media";
+      });
+    });
+  </script>
+
+</body>
+
+</html>

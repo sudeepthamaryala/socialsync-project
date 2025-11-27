@@ -1,0 +1,245 @@
+/* ===========================
+   🌈 Live Moving Blob Background
+   =========================== */
+body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    height: 100vh;
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #050505;   /* True black background */
+}
+
+/* The live animated blob */
+.blob {
+    position: fixed;
+    width: 650px;
+    height: 650px;
+
+    background: radial-gradient(circle at center, #00eaff 0%, #005bff 100%);
+    filter: blur(180px);
+    opacity: 0.8;
+
+    animation: moveBlob 12s infinite alternate ease-in-out;
+}
+
+@keyframes moveBlob {
+    0%   { transform: translate(-250px, -200px) scale(1); }
+    50%  { transform: translate(200px, -50px) scale(1.25); }
+    100% { transform: translate(-120px, 250px) scale(1.1); }
+}
+
+/* ===========================
+   Login / Signup Card
+   =========================== */
+.container {
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    background: rgba(42, 45, 53, 0.92);   /* SOFT BLUE-GREY CARD */
+    backdrop-filter: blur(18px);
+    padding: 40px;
+    width: 360px;
+    border-radius: 20px;
+
+    border: 1px solid rgba(0, 234, 255, 0.35);
+    box-shadow: 0 0 25px rgba(0, 234, 255, 0.25);
+
+    animation: glowPulse 4s infinite alternate;
+}
+
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 15px rgba(0, 234, 255, 0.2); }
+    100% { box-shadow: 0 0 35px rgba(0, 234, 255, 0.5); }
+}
+
+/* ===========================
+   Titles
+   =========================== */
+h2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #00eaff;   /* Neon cyan */
+    margin-top: 0;
+}
+
+.subtitle {
+    color: #b3eeff;   /* Soft light cyan */
+    font-size: 14px;
+}
+
+/* ===========================
+   Input Fields
+   =========================== */
+.input-group {
+    margin-bottom: 18px;
+}
+
+label {
+    font-size: 14px;
+    color: #d7faff;
+    font-weight: 600;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+
+    border: none;
+    border-radius: 10px;
+
+    font-size: 14px;
+    color: #fff;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    outline: none;
+    transition: box-shadow 0.3s ease, background 0.3s ease;
+}
+
+input:hover,
+input:focus {
+    box-shadow: 0 0 12px rgba(0, 234, 255, 0.7);
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* ===========================
+   Buttons (Login + Signup)
+   =========================== */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    background: linear-gradient(120deg, #00eaff, #0066ff);
+    background-size: 200%;
+    color: #000;
+
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-position 0.4s ease;
+}
+
+/* Animation happens ONLY ON HOVER */
+.btn-primary:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(0, 234, 255, 0.9);
+
+    animation: buttonGlow 2.5s ease infinite;
+}
+
+@keyframes buttonGlow {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* ===========================
+   Footer links
+   =========================== */
+.footer-text {
+    margin-top: 15px;
+    text-align: center;
+    color: #d7faff;
+}
+
+.footer-text a {
+    color: #00eaff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* ===========================
+   Language Selector
+   =========================== */
+.lang-select {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 20;
+}
+
+select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    background: rgba(255,255,255,0.9);
+}
+
+.forgot-link {
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.forgot-link a {
+    color: #00eaff;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.forgot-link a:hover {
+    text-decoration: underline;
+    color: #66f2ff;
+}
+
+/* ===========================
+   Feedback Text & Secondary Buttons
+   =========================== */
+.feedback-text {
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.feedback-text.success {
+    color: #00ff88;
+}
+
+.feedback-text.error {
+    color: #ff4466;
+}
+
+.btn-secondary {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    background: rgba(0, 234, 255, 0.2);
+    color: #00eaff;
+    border: 1px solid #00eaff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-secondary:hover {
+    background: rgba(0, 234, 255, 0.35);
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.6);
+}
+
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
